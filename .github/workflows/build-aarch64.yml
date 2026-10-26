@@ -2,14 +2,14 @@ name: build-aarch64
 
 on:
   push:
-    branches: ['anland-3.17']
+    branches: ['master']
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-24.04-arm
     container:
-      image: archlinux:base-devel
+      image: ghcr.io/archlinux/archlinux:base-devel
     steps:
       - name: Install build dependencies
         run: |
