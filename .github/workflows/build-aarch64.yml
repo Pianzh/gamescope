@@ -1,0 +1,54 @@
+name: build-aarch64
+
+on:
+  push:
+    branches: ['anland-3.17']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04-arm
+    container:
+      image: archlinux:base-devel
+    steps:
+      - name: Install build dependencies
+        run: |
+          pacman -Syu --noconfirm \
+            git meson ninja cmake pkgconf \
+            wayland wayland-protocols libdrm vulkan-headers vulkan-icd-loader \
+            sdl2 \
+            libx11 libxcomposite libxcursor libxkbcommon libxi libxres libxtst \
+            libxmu libxxf86vm libxrandr \
+            libxcb xcb-util-wm xcb-util-renderutil xcb-util-cursor xcb-util-errors \
+            libxkbcommon \
+            libcap libpipewire hwdata glm stb \
+            libinput libseat systemd-libs pixman
+
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Configure
+        run: |
+          meson setup build \
+            -Dbuildtype=release \
+            -Denable_openvr_support=false \
+            -Denable_tests=false \
+            -Dpipewire=enabled
+
+      - name: Build
+        run: ninja -C build
+
+      - name: Package
+        run: |
+          set -e
+          ls -la build/src/
+          tar -C build/src -czf anland-gamescope-aarch64.tar.gz gamescope
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: anland-gamescope-aarch64
+          path: anland-gamescope-aarch64.tar.gz

@@ -469,6 +469,22 @@ bool CVulkanDevice::createDevice()
 		// This could happen when e.g. running the lavapipe driver
 		// (without an actual physical device)
 		vk_log.warnf( "physical device doesn't support VK_EXT_physical_device_drm" );
+#if HAVE_DRM
+		// [anland] kgsl-style Vulkan devices (Android containers: render via
+		// /dev/kgsl-3d0, DRM passthrough only exposes a GPU-less sde-kms node)
+		// expose no VK_EXT_physical_device_drm. Fall back to any usable DRM
+		// render node so wl_drm/GBM paths still get a valid fd instead of -1.
+		drmDevice *fallbackDevs[32] = {};
+		int nFallback = drmGetDevices2( 0, fallbackDevs, 32 );
+		for ( int i = 0; i < nFallback && m_drmRendererFd < 0; i++ ) {
+			if ( fallbackDevs[i]->available_nodes & ( 1 << DRM_NODE_RENDER ) )
+				m_drmRendererFd = open( fallbackDevs[i]->nodes[DRM_NODE_RENDER], O_RDWR | O_CLOEXEC );
+		}
+		if ( nFallback >= 0 )
+			drmFreeDevices( fallbackDevs, nFallback );
+		if ( m_drmRendererFd >= 0 )
+			vk_log.infof( "Anland: fallback DRM render fd acquired (no VK_EXT_physical_device_drm)" );
+#endif
 	} else {
 #if HAVE_DRM
 		VkPhysicalDeviceDrmPropertiesEXT drmProps = {
