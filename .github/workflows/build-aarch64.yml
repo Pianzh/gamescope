@@ -26,7 +26,7 @@ jobs:
             libxcb-cursor-dev libxcb-shape0-dev libxcb-render0-dev \
             libcap-dev libpipewire-0.3-dev libglm-dev libstb-dev \
             libluajit-5.1-dev libinput-dev libseat-dev libudev-dev \
-            libpixman-1-dev glslang-tools hwdata xwayland libavif-dev
+            libpixman-1-dev glslang-tools hwdata xwayland libavif-dev libpciaccess-dev
 
       - name: Install newer Vulkan-Headers (noble ships 1.3.275, WSI layer needs >= 1.4.335)
         run: |
@@ -47,10 +47,7 @@ jobs:
         run: |
           git clone --depth 1 https://gitlab.freedesktop.org/mesa/drm /tmp/libdrm
           cd /tmp/libdrm
-          meson setup build -Dintel=disabled -Dradeon=disabled -Damdgpu=disabled \
-            -Dnouveau=disabled -Dvmwgfx=disabled -Domap=disabled -Dexynos=disabled \
-            -Dtegra=disabled -Dvc4=disabled -Detnaviv=disabled -Dfreedreno=enabled \
-            -Dtests=false -Dman-pages=disabled -Dvalgrind=disabled
+          meson setup build
           ninja -C build
           sudo ninja -C build install
           sudo ldconfig
