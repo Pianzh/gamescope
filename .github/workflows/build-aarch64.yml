@@ -56,7 +56,7 @@ jobs:
         run: |
           git clone --depth 1 -b xkbcommon-1.8.1 https://github.com/xkbcommon/libxkbcommon /tmp/xkb
           cd /tmp/xkb
-          meson setup build -Dx11=enabled -Dtests=disabled
+          meson setup build -Denable-x11=enabled -Denable-tools=disabled -Denable-docs=disabled
           ninja -C build
           sudo ninja -C build install
           sudo ldconfig
