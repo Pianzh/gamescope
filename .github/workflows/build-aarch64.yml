@@ -70,6 +70,15 @@ jobs:
           sudo ninja -C build install
           sudo ldconfig
 
+      - name: Install newer pixman (noble ships 0.42.2, wlroots 0.20 needs >= 0.43.0)
+        run: |
+          git clone --depth 1 -b pixman-0.46.4 https://gitlab.freedesktop.org/pixman/pixman /tmp/pixman
+          cd /tmp/pixman
+          meson setup build -Dtests=disabled -Ddemos=disabled -Dlibpng=disabled -Dgtk=disabled
+          ninja -C build
+          sudo ninja -C build install
+          sudo ldconfig
+
       - name: Checkout (with submodules)
         uses: actions/checkout@v4
         with:
