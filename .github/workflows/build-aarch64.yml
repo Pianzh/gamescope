@@ -79,6 +79,14 @@ jobs:
           sudo ninja -C build install
           sudo ldconfig
 
+      - name: Install newer wayland-protocols (noble ships 1.45, wlroots 0.20 needs >= 1.47)
+        run: |
+          git clone --depth 1 -b 1.49 https://gitlab.freedesktop.org/wayland/wayland-protocols /tmp/wlproto
+          cd /tmp/wlproto
+          meson setup build -Dtests=false
+          ninja -C build
+          sudo ninja -C build install
+
       - name: Checkout (with submodules)
         uses: actions/checkout@v4
         with:
