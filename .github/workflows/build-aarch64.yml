@@ -28,6 +28,12 @@ jobs:
             libluajit-5.1-dev libinput-dev libseat-dev libudev-dev \
             libpixman-1-dev glslang-tools hwdata xwayland libavif-dev
 
+      - name: Install newer Vulkan-Headers (noble ships 1.3.275, WSI layer needs >= 1.4.335)
+        run: |
+          git clone --depth 1 -b v1.4.335 https://github.com/KhronosGroup/Vulkan-Headers /tmp/vulkan-headers
+          cmake -S /tmp/vulkan-headers -B /tmp/vulkan-headers/build -DCMAKE_INSTALL_PREFIX=/usr/local
+          sudo cmake --install /tmp/vulkan-headers/build
+
       - name: Checkout (with submodules)
         uses: actions/checkout@v4
         with:
