@@ -43,6 +43,18 @@ jobs:
           sudo ninja -C build install
           sudo ldconfig
 
+      - name: Install newer libdrm (noble ships 2.4.125, wlroots 0.20 needs >= 2.4.129)
+        run: |
+          git clone --depth 1 -b 2.4.129 https://gitlab.freedesktop.org/mesa/drm /tmp/libdrm
+          cd /tmp/libdrm
+          meson setup build -Dintel=disabled -Dradeon=disabled -Damdgpu=disabled \
+            -Dnouveau=disabled -Dvmwgfx=disabled -Domap=disabled -Dexynos=disabled \
+            -Dtegra=disabled -Dvc4=disabled -Detnaviv=disabled -Dfreedreno=enabled \
+            -Dtests=false -Dman-pages=disabled -Dvalgrind=disabled
+          ninja -C build
+          sudo ninja -C build install
+          sudo ldconfig
+
       - name: Checkout (with submodules)
         uses: actions/checkout@v4
         with:
