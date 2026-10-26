@@ -54,7 +54,7 @@ jobs:
 
       - name: Install newer libxkbcommon (noble ships 1.6, wlroots 0.20 needs >= 1.8)
         run: |
-          git clone --depth 1 -b xkbcommon-1.8.1 https://gitlab.freedesktop.org/xkbcommon/libxkbcommon /tmp/xkb
+          git clone --depth 1 -b xkbcommon-1.8.1 https://github.com/xkbcommon/libxkbcommon /tmp/xkb
           cd /tmp/xkb
           meson setup build -Dx11=enabled -Dtests=disabled
           ninja -C build
