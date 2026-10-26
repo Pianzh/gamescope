@@ -54,8 +54,7 @@ jobs:
 
       - name: Install newer libxkbcommon (noble ships 1.6, wlroots 0.20 needs >= 1.8)
         run: |
-          curl -L -o /tmp/xkb.tar.gz https://gitlab.freedesktop.org/xkbcommon/libxkbcommon/-/archive/xkbcommon-1.8.1/libxkbcommon-1.8.1.tar.gz
-          mkdir /tmp/xkb && tar -xf /tmp/xkb.tar.gz -C /tmp/xkb --strip-components=1
+          git clone --depth 1 -b xkbcommon-1.8.1 https://gitlab.freedesktop.org/xkbcommon/libxkbcommon /tmp/xkb
           cd /tmp/xkb
           meson setup build -Dx11=enabled -Dtests=disabled
           ninja -C build
@@ -64,8 +63,7 @@ jobs:
 
       - name: Install newer libinput (noble ships 1.25, wlroots 0.20 needs >= 1.26)
         run: |
-          curl -L -o /tmp/libinput.tar.gz https://gitlab.freedesktop.org/libinput/libinput/-/archive/1.32.0/libinput-1.32.0.tar.gz
-          mkdir /tmp/libinput && tar -xf /tmp/libinput.tar.gz -C /tmp/libinput --strip-components=1
+          git clone --depth 1 -b 1.32.0 https://gitlab.freedesktop.org/libinput/libinput /tmp/libinput
           cd /tmp/libinput
           meson setup build -Ddocumentation=false -Dtests=false -Ddebug-gui=false -Dlibwacom=false
           ninja -C build
