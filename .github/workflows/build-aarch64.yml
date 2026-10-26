@@ -37,9 +37,10 @@ jobs:
       - name: Install newer wayland (noble ships 1.22, wlroots 0.20 needs >= 1.24)
         run: |
           git clone --depth 1 -b 1.24.0 https://gitlab.freedesktop.org/wayland/wayland /tmp/wayland
-          meson setup /tmp/wayland/build -Ddocumentation=false -Dtests=false -Ddtd_validation=false
-          ninja -C /tmp/wayland/build
-          sudo ninja -C /tmp/wayland/build install
+          cd /tmp/wayland
+          meson setup build -Ddocumentation=false -Dtests=false -Ddtd_validation=false
+          ninja -C build
+          sudo ninja -C build install
           sudo ldconfig
 
       - name: Checkout (with submodules)
