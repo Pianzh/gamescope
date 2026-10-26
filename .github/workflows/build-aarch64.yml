@@ -23,7 +23,7 @@ jobs:
             libxcb1-dev libxcb-ewmh-dev libxcb-icccm4-dev \
             libxcb-render-util0-dev libxcb-xfixes0-dev libxcb-xinput-dev \
             libxcb-xkb-dev libxcb-composite0-dev libxcb-res0-dev \
-            libxcb-errors-dev libxcb-cursor-dev libxcb-shape0-dev libxcb-render0-dev \
+            libxcb-cursor-dev libxcb-shape0-dev libxcb-render0-dev \
             libcap-dev libpipewire-0.3-dev libglm-dev libstb-dev \
             libluajit-5.1-dev libinput-dev libseat-dev libudev-dev \
             libpixman-1-dev glslang-tools hwdata xwayland libavif-dev
