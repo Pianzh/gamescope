@@ -52,6 +52,26 @@ jobs:
           sudo ninja -C build install
           sudo ldconfig
 
+      - name: Install newer libxkbcommon (noble ships 1.6, wlroots 0.20 needs >= 1.8)
+        run: |
+          curl -L -o /tmp/xkb.tar.xz https://github.com/xkbcommon/libxkbcommon/releases/download/xkbcommon-1.8.1/libxkbcommon-1.8.1.tar.xz
+          mkdir /tmp/xkb && tar -xf /tmp/xkb.tar.xz -C /tmp/xkb --strip-components=1
+          cd /tmp/xkb
+          meson setup build -Dx11=enabled -Dtests=disabled
+          ninja -C build
+          sudo ninja -C build install
+          sudo ldconfig
+
+      - name: Install newer libinput (noble ships 1.25, wlroots 0.20 needs >= 1.26)
+        run: |
+          curl -L -o /tmp/libinput.tar.xz https://gitlab.freedesktop.org/libinput/libinput/-/releases/1.28.1/downloads/libinput-1.28.1.tar.xz
+          mkdir /tmp/libinput && tar -xf /tmp/libinput.tar.xz -C /tmp/libinput --strip-components=1
+          cd /tmp/libinput
+          meson setup build -Ddocumentation=false -Dtests=false -Ddebug-gui=false -Dlibwacom=false
+          ninja -C build
+          sudo ninja -C build install
+          sudo ldconfig
+
       - name: Checkout (with submodules)
         uses: actions/checkout@v4
         with:
