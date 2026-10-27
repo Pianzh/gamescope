@@ -1,0 +1,61 @@
+name: build-wine-gputest
+
+on:
+  push:
+    branches: ['master']
+    paths: ['gputest/**', '.github/workflows/build-wine-gputest.yml']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Install mingw cross toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 curl
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build d3d9test.exe
+        run: |
+          x86_64-w64-mingw32-g++ gputest/d3d9test.cpp -o d3d9test.exe -O2 -static -ld3d9 -lgdi32
+          file d3d9test.exe
+
+      - name: Download DXVK
+        run: |
+          curl -L -o dxvk.tar.gz https://github.com/doitsujin/dxvk/releases/download/v3.1.1/dxvk-3.1.1.tar.gz
+          mkdir dxvk && tar -xzf dxvk.tar.gz -C dxvk --strip-components=1
+          ls dxvk/x64/
+
+      - name: Package
+        run: |
+          set -e
+          mkdir -p pkg
+          cp d3d9test.exe pkg/
+          cp dxvk/x64/*.dll pkg/
+          cat > pkg/setup_dxvk.sh <<'EOF'
+#!/bin/sh
+# DXVK setup inside a wine prefix (run with WINEPREFIX set)
+set -e
+P="${WINEPREFIX:-$HOME/.wine}"
+S="$P/drive_c/windows/system32"
+for d in d3d9 dxgi; do
+  if [ -f "$d.dll" ]; then cp -v "$d.dll" "$S/"; fi
+done
+export WINEDEBUG=-all
+for d in d3d9 dxgi; do
+  wine reg add 'HKCU\Software\Wine\DllOverrides' /v "$d" /t REG_SZ /d native /f
+done
+echo "DXVK dlls installed + overrides set"
+EOF
+          chmod +x pkg/setup_dxvk.sh
+          ls -la pkg/
+          tar -czf anland-wine-gputest.tar.gz -C pkg .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: anland-wine-gputest
+          path: anland-wine-gputest.tar.gz
