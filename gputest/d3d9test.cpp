@@ -10,7 +10,9 @@ static LRESULT CALLBACK WndProc(HWND h, UINT m, WPARAM w, LPARAM l) {
     return DefWindowProcA(h, m, w, l);
 }
 
-int main(void) {
+int main(int argc, char **argv) {
+    DWORD sleepMs = 8;
+    if (argc > 1) sleepMs = (DWORD)atoi(argv[1]);
     WNDCLASSA wc = {0};
     wc.lpfnWndProc = WndProc;
     wc.hInstance = GetModuleHandleA(NULL);
@@ -41,7 +43,8 @@ int main(void) {
         if (SUCCEEDED(hr)) printf("NOTE: fell back to software vertex processing\n");
     }
     if (FAILED(hr)) { printf("FAIL: CreateDevice 0x%08lx\n", (unsigned long)hr); return 1; }
-    printf("OK: D3D9 HAL device created\n");
+    printf("OK: D3D9 HAL device created (frame pacing: %lu ms)
+", (unsigned long)sleepMs);
 
     struct V { float x, y, z, rhw; DWORD c; } tri[3];
     DWORD start = GetTickCount(), frames = 0, last = start;
@@ -78,7 +81,8 @@ int main(void) {
             frames = 0;
             last = now;
         }
-        Sleep(8);
+        if (sleepMs)
+            Sleep(sleepMs);
     }
 done:
     printf("DONE: rendered %lu frames\n", (unsigned long)frames);
