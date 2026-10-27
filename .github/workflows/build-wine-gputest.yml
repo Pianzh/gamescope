@@ -35,21 +35,20 @@ jobs:
           mkdir -p pkg
           cp d3d9test.exe pkg/
           cp dxvk/x64/*.dll pkg/
-          cat > pkg/setup_dxvk.sh <<'EOF'
-#!/bin/sh
-# DXVK setup inside a wine prefix (run with WINEPREFIX set)
-set -e
-P="${WINEPREFIX:-$HOME/.wine}"
-S="$P/drive_c/windows/system32"
-for d in d3d9 dxgi; do
-  if [ -f "$d.dll" ]; then cp -v "$d.dll" "$S/"; fi
-done
-export WINEDEBUG=-all
-for d in d3d9 dxgi; do
-  wine reg add 'HKCU\Software\Wine\DllOverrides' /v "$d" /t REG_SZ /d native /f
-done
-echo "DXVK dlls installed + overrides set"
-EOF
+          printf '%s\n' \
+            '#!/bin/sh' \
+            '# DXVK setup inside a wine prefix (run with WINEPREFIX set)' \
+            'set -e' \
+            'P="${WINEPREFIX:-$HOME/.wine}"' \
+            'S="$P/drive_c/windows/system32"' \
+            'for d in d3d9 dxgi; do' \
+            '  if [ -f "$d.dll" ]; then cp -v "$d.dll" "$S/"; fi' \
+            'done' \
+            'export WINEDEBUG=-all' \
+            'for d in d3d9 dxgi; do' \
+            '  wine reg add "HKCU\\Software\\Wine\\DllOverrides" /v "$d" /t REG_SZ /d native /f' \
+            'done' \
+            'echo "DXVK dlls installed + overrides set"' > pkg/setup_dxvk.sh
           chmod +x pkg/setup_dxvk.sh
           ls -la pkg/
           tar -czf anland-wine-gputest.tar.gz -C pkg .
