@@ -43,8 +43,7 @@ int main(int argc, char **argv) {
         if (SUCCEEDED(hr)) printf("NOTE: fell back to software vertex processing\n");
     }
     if (FAILED(hr)) { printf("FAIL: CreateDevice 0x%08lx\n", (unsigned long)hr); return 1; }
-    printf("OK: D3D9 HAL device created (frame pacing: %lu ms)
-", (unsigned long)sleepMs);
+    printf("OK: D3D9 HAL device created (frame pacing: %lu ms)\n", (unsigned long)sleepMs);
 
     struct V { float x, y, z, rhw; DWORD c; } tri[3];
     DWORD start = GetTickCount(), frames = 0, last = start;
